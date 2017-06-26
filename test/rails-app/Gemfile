@@ -10,8 +10,8 @@ gem 'sqlite3'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem "trailblazer-endpoint", path: "../../."
-gem "trailblazer", path: "../../../trailblazer"
-gem "trailblazer-operation", path: "../../../operation"
+gem "trailblazer"
+gem "trailblazer-operation"
 # gem "trailblazer-rails"
 
 gem "multi_json"

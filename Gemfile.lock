@@ -1,12 +1,4 @@
 PATH
-  remote: ../trailblazer
-  specs:
-    trailblazer (2.0.6)
-      declarative
-      reform (>= 2.2.0, < 3.0.0)
-      trailblazer-operation (>= 0.0.12, < 0.1.0)
-
-PATH
   remote: .
   specs:
     trailblazer-endpoint (0.0.1)
@@ -69,6 +61,10 @@ GEM
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
       uber (< 0.2.0)
+    trailblazer (2.0.6)
+      declarative
+      reform (>= 2.2.0, < 3.0.0)
+      trailblazer-operation (>= 0.0.12, < 0.1.0)
     trailblazer-operation (0.0.13)
       declarative
       pipetree (>= 0.1.1, < 0.2.0)
@@ -85,8 +81,8 @@ DEPENDENCIES
   minitest-line
   multi_json
   rake
-  trailblazer!
+  trailblazer
   trailblazer-endpoint!
 
 BUNDLED WITH
-   1.14.6
+   1.15.1
