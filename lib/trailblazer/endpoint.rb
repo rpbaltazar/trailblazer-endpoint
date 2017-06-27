@@ -2,28 +2,31 @@ require "dry/matcher"
 
 module Trailblazer
   class Endpoint
-    # this is totally WIP as we need to find best practices.
-    # also, i want this to be easily extendable.
     Matcher = Dry::Matcher.new(
-      present: Dry::Matcher::Case.new( # DISCUSS: the "present" flag needs some discussion.
+      present: Trailblazer::Matcher::Case.new(
         match:   ->(result) { result.success? && result["present"] },
-        resolve: ->(result) { result }),
-      success: Dry::Matcher::Case.new(
+        handler: ->(result) { puts result }
+      ),
+      success: Trailblazer::Matcher::Case.new(
         match:   ->(result) { result.success? },
-        resolve: ->(result) { result }),
-      created: Dry::Matcher::Case.new(
+        handler: ->(result) { puts result }
+      ),
+      created: Trailblazer::Matcher::Case.new(
         match:   ->(result) { result.success? && result["model.action"] == :new }, # the "model.action" doesn't mean you need Model.
-        resolve: ->(result) { result }),
-      not_found: Dry::Matcher::Case.new(
+        handler: ->(result) { puts result }
+      ),
+      not_found: Trailblazer::Matcher::Case.new(
         match:   ->(result) { result.failure? && result["result.model"] && result["result.model"].failure? },
-        resolve: ->(result) { result }),
-      # TODO: we could add unauthorized here.
-      unauthenticated: Dry::Matcher::Case.new(
+        handler: ->(result) { puts result }
+      ),
+      unauthenticated: Trailblazer::Matcher::Case.new(
         match:   ->(result) { result.failure? && result["result.policy.default"].failure? }, # FIXME: we might need a &. here ;)
-        resolve: ->(result) { result }),
-      invalid: Dry::Matcher::Case.new(
+        handler: ->(result) { puts result }
+      ),
+      invalid: Trailblazer::Matcher::Case.new(
         match:   ->(result) { result.failure? && result["result.contract.default"] && result["result.contract.default"].failure? },
-        resolve: ->(result) { result })
+        handler: ->(result) { puts result }
+      ),
     )
 
     # `call`s the operation.
@@ -49,6 +52,13 @@ module Trailblazer
         handlers = Handlers::Rails.new(self, options).()
         Endpoint.(operation_class, handlers, *options[:args], &block)
       end
+    end
+  end
+
+  class Matcher::Case < Dry::Matcher::Case
+    def initialize(match:, handler:, resolve: DEFAULT_RESOLVE)
+      super
+      @handler = handler
     end
   end
 end
