@@ -1,6 +1,15 @@
 require "dry/matcher"
 
 module Trailblazer
+  module Matcher
+    class Case
+      def initialize(match:, handler:)
+        @match = match
+        @handler = handler
+      end
+    end
+  end
+
   class Endpoint
     Matcher = Dry::Matcher.new(
       present: Trailblazer::Matcher::Case.new(
@@ -29,9 +38,10 @@ module Trailblazer
       ),
     )
 
-    # `call`s the operation.
     def self.call(operation_class, handlers, *args, &block)
+      # `call`s the operation.
       result = operation_class.(*args)
+      # new endpoint instance with result, handlers and potential block
       new.(result, handlers, &block)
     end
 
@@ -52,13 +62,6 @@ module Trailblazer
         handlers = Handlers::Rails.new(self, options).()
         Endpoint.(operation_class, handlers, *options[:args], &block)
       end
-    end
-  end
-
-  class Matcher::Case < Dry::Matcher::Case
-    def initialize(match:, handler:, resolve: DEFAULT_RESOLVE)
-      super
-      @handler = handler
     end
   end
 end
