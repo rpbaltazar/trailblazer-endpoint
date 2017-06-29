@@ -6,6 +6,7 @@ module Trailblazer
 
     def call(result, custom_handlers)
       merge_cases(custom_handlers) if custom_handlers
+
       @cases.each do |key, value|
         if value[:match].(result)
           return value[:handler].(result)

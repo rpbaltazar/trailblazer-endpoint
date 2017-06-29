@@ -1,8 +1,9 @@
 require 'test_helper'
+require 'json'
 
 class EndpointTest < Minitest::Spec
   Song = Struct.new(:id, :title, :length) do
-    def self.find_by(id:nil); id.nil? ? nil : new(id) end
+    def self.find_by(id:nil); id.nil? ? nil : new(id, "fancy_stuff") end
   end
 
   require 'representable/json'
@@ -32,7 +33,7 @@ class EndpointTest < Minitest::Spec
   it 'uses the default handlers' do
     result = Show.({id: 1})
     endpoint_res = Trailblazer::Endpoint.new.(result)
-    endpoint_res.must_equal '{"id":1}'
+    endpoint_res.must_equal '{"id":1,"title":"fancy_stuff"}'
   end
 
   it 'overrides the handler' do
@@ -46,11 +47,11 @@ class EndpointTest < Minitest::Spec
     endpoint_res.must_equal 'I override'
   end
 
-  it 'overrides the matcher' do
+  it 'apends cases && overrides matchers' do
     result = Show.({id: 1})
     custom_handlers = [{
       success: {
-        match: ->(result) { result.success? && result['model'].title == "fancy_stuff" }
+        match: ->(result) { result.failure? }
       },
       fancy_stuff: {
         match: ->(result) { result.success? },
