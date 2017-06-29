@@ -37,12 +37,27 @@ class EndpointTest < Minitest::Spec
 
   it 'overrides the handler' do
     result = Show.({id: 1})
-    custom_handler = {
+    custom_handlers = [{
       success: {
         handler: ->(result) { 'I override' }
       }
-    }
-    endpoint_res = Trailblazer::Endpoint.new.(result, custom_handler)
+    }]
+    endpoint_res = Trailblazer::Endpoint.new.(result, custom_handlers)
     endpoint_res.must_equal 'I override'
+  end
+
+  it 'overrides the matcher' do
+    result = Show.({id: 1})
+    custom_handlers = [{
+      success: {
+        match: ->(result) { result.success? && result['model'].title == "fancy_stuff" }
+      },
+      fancy_stuff: {
+        match: ->(result) { result.success? },
+        handler: ->(result) { { "fancy_stuff": 1 }.to_json }
+      }
+    }]
+    endpoint_res = Trailblazer::Endpoint.new.(result, custom_handlers)
+    endpoint_res.must_equal '{"fancy_stuff":1}'
   end
 end

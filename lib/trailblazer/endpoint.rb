@@ -16,13 +16,15 @@ module Trailblazer
     private
 
     def merge_cases(custom_handlers)
-      custom_handlers.each_pair do |current_key, other_value|
-        if @cases[current_key]
-          @cases[current_key][:match] = other_value[:match] if other_value[:match].is_a?(Proc)
-          @cases[current_key][:handler] = other_value[:handler] if other_value[:handler].is_a?(Proc)
-        else
-          return unless other_value[:match].is_a?(Proc) && other_value[:handler].is_a?(Proc)
-          @cases[current_key] = other_value
+      custom_handlers.each do |handler|
+        handler.each_pair do |current_key, other_value|
+          if @cases[current_key]
+            @cases[current_key][:match] = other_value[:match] if other_value[:match].is_a?(Proc)
+            @cases[current_key][:handler] = other_value[:handler] if other_value[:handler].is_a?(Proc)
+          else
+            return unless other_value[:match].is_a?(Proc) && other_value[:handler].is_a?(Proc)
+            @cases[current_key] = other_value
+          end
         end
       end
     end
