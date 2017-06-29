@@ -1,3 +1,3 @@
-require "minitest/autorun"
-require "trailblazer"
-require "trailblazer/endpoint"
+require 'minitest/autorun'
+require 'trailblazer'
+require_relative '../lib/trailblazer-endpoint'
