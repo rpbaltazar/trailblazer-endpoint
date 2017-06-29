@@ -4,10 +4,25 @@ module Trailblazer
       @cases = cases
     end
 
-    def call(result)
+    def call(result, custom_handlers)
+      merge_cases(custom_handlers) if custom_handlers
       @cases.each do |key, value|
         if value[:match].(result)
           return value[:handler].(result)
+        end
+      end
+    end
+
+    private
+
+    def merge_cases(custom_handlers)
+      custom_handlers.each_pair do |current_key, other_value|
+        if @cases[current_key]
+          @cases[current_key][:match] = other_value[:match] if other_value[:match].is_a?(Proc)
+          @cases[current_key][:handler] = other_value[:handler] if other_value[:handler].is_a?(Proc)
+        else
+          return unless other_value[:match].is_a?(Proc) && other_value[:handler].is_a?(Proc)
+          @cases[current_key] = other_value
         end
       end
     end
@@ -29,7 +44,7 @@ module Trailblazer
 
     def call(result, handlers=nil, &block)
       matcher.(result, &block) and return if block_given? # evaluate user blocks first.
-      matcher.(result)     # then, generic Rails handlers in controller context.
+      matcher.(result, handlers)     # then, generic Rails handlers in controller context.
     end
 
     def matcher

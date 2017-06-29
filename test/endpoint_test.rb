@@ -29,9 +29,20 @@ class EndpointTest < Minitest::Spec
     representer :serializer, Serializer
   end
 
-  it do
+  it "uses the default handlers" do
     result = Show.({id: 1})
     endpoint_res = Trailblazer::Endpoint.new.(result)
     endpoint_res.must_equal '{"id":1}'
+  end
+
+  it "overrides the handler" do
+    result = Show.({id: 1})
+    custom_handler = {
+      success: {
+        handler: ->(result) { 'I override' }
+      }
+    }
+    endpoint_res = Trailblazer::Endpoint.new.(result, custom_handler)
+    endpoint_res.must_equal 'I override'
   end
 end
