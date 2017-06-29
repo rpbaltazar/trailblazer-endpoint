@@ -5,7 +5,7 @@ class EndpointTest < Minitest::Spec
     def self.find_by(id:nil); id.nil? ? nil : new(id) end
   end
 
-  require "representable/json"
+  require 'representable/json'
   class Serializer < Representable::Decorator
     include Representable::JSON
     property :id
@@ -29,13 +29,13 @@ class EndpointTest < Minitest::Spec
     representer :serializer, Serializer
   end
 
-  it "uses the default handlers" do
+  it 'uses the default handlers' do
     result = Show.({id: 1})
     endpoint_res = Trailblazer::Endpoint.new.(result)
     endpoint_res.must_equal '{"id":1}'
   end
 
-  it "overrides the handler" do
+  it 'overrides the handler' do
     result = Show.({id: 1})
     custom_handler = {
       success: {
