@@ -12,6 +12,7 @@ GEM
     declarative-builder (0.1.0)
       declarative-option (< 0.2.0)
     declarative-option (0.1.0)
+    developer (0.0.1)
     disposable (0.4.5)
       declarative (>= 0.0.9, < 1.0.0)
       declarative-builder (< 0.2.0)
@@ -86,6 +87,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler
+  developer
   dry-validation
   minitest
   minitest-line
