@@ -12,34 +12,72 @@ module Trailblazer
 
     private
 
-    def created(options, result:, **)
-      return false unless result.success? && result["model.action"] == :new
+    def created(options, activity:, representer:, **)
+      return false unless activity.success? && activity["model.action"] == :new
 
-      options[:result] = { "data": representer.new(result[:model]), "status": :created }
+      options[:result] = { "data": representer.new(activity[:model]), "status": :created }
     end
 
-    def deleted(options, result:, **)
+    def deleted(options, activity:, **)
+      return false unless activity.success? && activity["model.action"] == :destroy
+
+      options[:result] = { "data": { id: activity[:model].id }, "status": :ok }
     end
 
-    def found(options, result:, **)
+    def found(options, activity:, representer:, **)
+      return false unless activity.success? && activity["model.action"] == :find_by
+
+      options[:result] = { "data": representer.new(activity[:model]), "status": :ok }
     end
 
-    def success(options, result:, **)
+    def success(options, activity:, **)
+      return false unless activity.success?
+
+      representer = options[:representer]
+      data = if representer
+               representer.new(activity[:model])
+             else
+               activity[:model]
+             end
+
+      options[:result] = { "data": data, "status": :ok }
     end
 
-    def unauthenticated(options, result:, **)
+    def unauthenticated(options, activity:, **)
+      return false unless activity.policy_error?
+
+      options[:result] = { "data": {}, "status": :unauthorized }
     end
 
-    def not_found(options, result:, **)
+    def not_found(options, activity:, **)
+      return false unless activity.failure? && activity["result.model"]&.failure?
+
+      options[:result] = {
+        "data": { errors: activity["result.model.errors"] },
+        "status": :unprocessable_entity
+      }
     end
 
-    def invalid(options, result:, **)
+    def invalid(options, activity:, **)
+      return false unless activity.failure?
+
+      options[:result] = {
+        "data": { errors: activity.errors || activity[:errors] },
+        "status": :unprocessable_entity
+      }
     end
 
-    def fallback(options, result:, **)
+    def fallback(options, _activity:, **)
+      options[:result] = {
+        "data": { errors: "Can't process the result" },
+        "status": :unprocessable_entity
+      }
     end
 
     def render(options, **)
+      # TODO: Think about the api for this endpoint
+      # should this make use of the respond_to or just return and let the
+      # controller make use of the result of this activity?
     end
   end
 end
