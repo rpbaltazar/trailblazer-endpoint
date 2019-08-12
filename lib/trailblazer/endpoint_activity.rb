@@ -4,14 +4,15 @@ module Trailblazer
   # to add the represented data and the matched result that can be used for
   # render
   class EndpointActivity < Trailblazer::Activity::Railway
-    step :created, Output(Activity::Right, :success) => End(:created), Output(Activity::Left, :failure) => Track(:success)
+    # step :check_mandatory_params, Output(Activity::Left, :failure) => End(:missing_params)
+    step :created, Output(Activity::Right, :success) => End(:render), Output(Activity::Left, :failure) => Track(:success)
     # step :deleted, Output(Activity::Right, :success) => Id(:render), Output(Activity::Left, :failure) => Track(:success)
     # step :found, Output(Activity::Right, :success) => Id(:render), Output(Activity::Left, :failure) => Track(:success)
     # step :success, Output(Activity::Right, :success) => Id(:render), Output(Activity::Left, :failure) => Track(:success)
     # step :unauthenticated, Output(Activity::Right, :success) => Id(:render), Output(Activity::Left, :failure) => Track(:success)
     # step :not_found, Output(Activity::Right, :success) => Id(:render), Output(Activity::Left, :failure) => Track(:success)
     # step :invalid, Output(Activity::Right, :success) => Id(:render), Output(Activity::Left, :failure) => Track(:success)
-    step :fallback, Output(Activity::Right, :success) => End(:fallback)
+    step :fallback, Output(Activity::Right, :success) => End(:render)
 
     private
 
